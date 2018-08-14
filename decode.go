@@ -83,3 +83,11 @@ func parseSignal(inputSignal []SignalPair) ([][]int64, [][]int64) {
 	}
 	return gapValues, pulseValues
 }
+
+func averageOfSlice(input []int64) int64 {
+	var sum int64
+	for _, value := range input {
+		sum += value
+	}
+	return (sum / int64(len(input)))
+}
