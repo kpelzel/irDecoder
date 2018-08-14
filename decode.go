@@ -16,9 +16,11 @@ type SignalPair struct {
 func main() {
 	inputPin := 10
 	rawSignal := decodeSignal(inputPin)
-	gapValues, _ := parseSignal(rawSignal)
-	binaryString := parseGapValues(gapValues, rawSignal)
-	fmt.Printf("Binary = %v\n", binaryString)
+	gapValues, pulseValues := parseSignal(rawSignal)
+	gapBinaryString := parseGapValues(gapValues, rawSignal)
+	pulseBinaryString := parsePulseValues(pulseValues, rawSignal)
+	fmt.Printf("Binary from gaps = %v\n", gapBinaryString)
+	fmt.Printf("Binary from pulses = %v\n", pulseBinaryString)
 }
 
 func decodeSignal(inPin int) []SignalPair {
@@ -142,6 +144,40 @@ func parseGapValues(inputGapValues [][]int64, inputSignal []SignalPair) string {
 				binarySlice = append(binarySlice, '1')
 			} else {
 				fmt.Printf("%v gapTime: %v = 0\n", finalGapValues[smallestGapIndex], pair.time)
+				binarySlice = append(binarySlice, '0')
+			}
+		}
+	}
+
+	//remove first character because it's the leading bit
+	binarySlice = binarySlice[1:]
+
+	return string(binarySlice)
+}
+
+func parsePulseValues(inputPulseValues [][]int64, inputSignal []SignalPair) string {
+	var binarySlice []byte
+	var finalPulseValues []int64
+	var smallestPulseIndex int
+
+	for _, pulseSlice := range inputPulseValues {
+		finalPulseValues = append(finalPulseValues, averageOfSlice(pulseSlice))
+	}
+	fmt.Printf("Final pulse values: \n")
+	for _, value := range finalPulseValues {
+		fmt.Println(value)
+	}
+
+	fmt.Printf("Calculating binary string...\n")
+	for _, pair := range inputSignal {
+		if pair.state == rpio.State(rpio.High) {
+			smallestPulseIndex = indexOfSmallest(finalPulseValues)
+
+			if pair.time > finalPulseValues[smallestPulseIndex]+300000 {
+				fmt.Printf("%v gapTime: %v = 1\n", finalPulseValues[smallestPulseIndex], pair.time)
+				binarySlice = append(binarySlice, '1')
+			} else {
+				fmt.Printf("%v gapTime: %v = 0\n", finalPulseValues[smallestPulseIndex], pair.time)
 				binarySlice = append(binarySlice, '0')
 			}
 		}
