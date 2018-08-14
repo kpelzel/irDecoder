@@ -14,7 +14,11 @@ type SignalPair struct {
 }
 
 func main() {
-
+	inputPin := 10
+	rawSignal := decodeSignal(inputPin)
+	gapValues, _ := parseSignal(rawSignal)
+	binaryString := parseGapValues(gapValues, rawSignal)
+	fmt.Printf("Binary = %v\n", binaryString)
 }
 
 func decodeSignal(inPin int) []SignalPair {
@@ -71,17 +75,82 @@ func parseSignal(inputSignal []SignalPair) ([][]int64, [][]int64) {
 	var pulseValues [][]int64
 
 	for _, pair := range inputSignal {
+		// If the state is a gap
 		if pair.state == rpio.State(rpio.High) {
 			fmt.Printf("Gap time: %v\n", pair.time)
-			if gapValues == nil {
-				s := []int64{pair.time}
-				gapValues = append(gapValues, s)
-			} else {
-
-			}
+			gapValues = addOrFindPulseGap(pair, gapValues)
+		} else if pair.state == rpio.State(rpio.Low) {
+			fmt.Printf("Pulse time: %v\n", pair.time)
+			pulseValues = addOrFindPulseGap(pair, pulseValues)
 		}
 	}
 	return gapValues, pulseValues
+}
+
+func addOrFindPulseGap(inputPair SignalPair, GapOrPulseValues [][]int64) [][]int64 {
+	var foundAverageCategory bool
+
+	// If GapOrPulseValues is totally empty
+	if GapOrPulseValues == nil {
+		s := []int64{inputPair.time}
+		GapOrPulseValues = append(GapOrPulseValues, s)
+	} else {
+		// Get averages of the slices within GapOrPulseValues and see if the pair time fits somewhere
+		foundAverageCategory = false
+		var averages []int64
+		for _, timeCategory := range GapOrPulseValues {
+			averages = append(averages, averageOfSlice(timeCategory))
+		}
+		for index, average := range averages {
+			if inputPair.time <= (average+250000) && inputPair.time >= (average-250000) && !foundAverageCategory {
+				GapOrPulseValues[index] = append(GapOrPulseValues[index], inputPair.time)
+				foundAverageCategory = true
+				fmt.Printf("Found category. Inserting: %v into category: %v\n", inputPair.time, average)
+			}
+		}
+		// If the pair time doesn't fit somewhere, create a new category for it
+		if !foundAverageCategory {
+			fmt.Printf("Category was not found. Adding %v to new category\n", inputPair.time)
+			s := []int64{inputPair.time}
+			GapOrPulseValues = append(GapOrPulseValues, s)
+		}
+	}
+	return GapOrPulseValues
+
+}
+
+func parseGapValues(inputGapValues [][]int64, inputSignal []SignalPair) string {
+	var binarySlice []byte
+	var finalGapValues []int64
+	var smallestGapIndex int
+
+	for _, gapSlice := range inputGapValues {
+		finalGapValues = append(finalGapValues, averageOfSlice(gapSlice))
+	}
+	fmt.Printf("Final gap values: \n")
+	for _, value := range finalGapValues {
+		fmt.Println(value)
+	}
+
+	fmt.Printf("Calculating binary string...\n")
+	for _, pair := range inputSignal {
+		if pair.state == rpio.State(rpio.High) {
+			smallestGapIndex = indexOfSmallest(finalGapValues)
+
+			if pair.time > finalGapValues[smallestGapIndex]+300000 {
+				fmt.Printf("%v gapTime: %v = 1\n", finalGapValues[smallestGapIndex], pair.time)
+				binarySlice = append(binarySlice, '1')
+			} else {
+				fmt.Printf("%v gapTime: %v = 0\n", finalGapValues[smallestGapIndex], pair.time)
+				binarySlice = append(binarySlice, '0')
+			}
+		}
+	}
+
+	//remove first character because it's the leading bit
+	binarySlice = binarySlice[1:]
+
+	return string(binarySlice)
 }
 
 func averageOfSlice(input []int64) int64 {
@@ -90,4 +159,20 @@ func averageOfSlice(input []int64) int64 {
 		sum += value
 	}
 	return (sum / int64(len(input)))
+}
+
+//finds the index of the smallest value in a slice
+func indexOfSmallest(inputSlice []int64) int {
+	var smallestValue int64
+	var smallestIndex int
+	for index, value := range inputSlice {
+		if smallestValue == 0 {
+			smallestValue = value
+			smallestIndex = index
+		} else if value < smallestValue {
+			smallestValue = value
+			smallestIndex = index
+		}
+	}
+	return smallestIndex
 }
