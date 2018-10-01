@@ -4,8 +4,11 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/stianeikeland/go-rpio"
+	rpio "github.com/stianeikeland/go-rpio"
 )
+
+var inputPin = 10
+var timeout = 100000
 
 // SignalPair is a pair of values that show the state of the ir receiver
 type SignalPair struct {
@@ -14,7 +17,6 @@ type SignalPair struct {
 }
 
 func main() {
-	inputPin := 10
 	rawSignal := decodeSignal(inputPin)
 	gapValues, pulseValues := parseSignal(rawSignal)
 	gapBinaryString := parseGapValues(gapValues, rawSignal)
@@ -61,8 +63,8 @@ func decodeSignal(inPin int) []SignalPair {
 			highCounter = 0
 		}
 
-		// 10000 is arbitrary, adjust as nessesary
-		if highCounter > 100000 {
+		// timout (global variable) is arbitrary, adjust as nessesary
+		if highCounter > timeout {
 			break
 		}
 
