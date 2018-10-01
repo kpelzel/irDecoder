@@ -26,7 +26,6 @@ func main() {
 }
 
 func decodeSignal(inPin int) []SignalPair {
-
 	pin := rpio.Pin(inPin)
 	pin.Input()
 	currentState := rpio.State(rpio.High)
