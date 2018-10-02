@@ -3,7 +3,7 @@ irDecoder
 
 NOTICE: This package is untested
 
-irDecoder uses a raspberry pi and IR receiver to decode any 38khz ir signal into it's underlying binary (or at least tries it's best)
+irDecoder uses a raspberry pi and IR receiver to decode any 38khz IR signal into it's underlying binary (or at least tries it's best)
 
 Dependencies
 ------------
