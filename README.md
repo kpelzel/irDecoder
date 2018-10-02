@@ -1,1 +1,25 @@
-# irDecoder
+irDecoder
+=======
+
+NOTICE: This package is untested
+
+irDecoder uses a raspberry pi and IR receiver to decode any 38khz ir signal into it's underlying binary (or at least tries it's best)
+
+Dependencies
+------------
+- Go
+- github.com/stianeikeland/go-rpio
+
+Software Installation & Setup
+-----------------------------
+irDecoder is written entirely in go and uses the go-rpio package to access the rpio pins. It can be built using:
+        
+        go build decode.go
+
+This command will make create an executable which you can run on the raspberry pi.
+        
+        ./decode
+
+Hardware Installation & Setup
+-----------------------------
+This package was designed to be used with a raspberry pi (any version should work) and an ir receiver (something similar to the TSOP38238). The input pin signal pin from the ir receiver is hard coded in as rpio pin 10. This can easily be changed by changing the value at the top of decode.go. 
