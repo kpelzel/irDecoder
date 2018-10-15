@@ -2,12 +2,13 @@ package main
 
 import (
 	"fmt"
+	"os"
+	"strconv"
 	"time"
 
 	rpio "github.com/stianeikeland/go-rpio"
 )
 
-var inputPin = 10
 var timeout = 100000
 
 // SignalPair is a pair of values that show the state of the ir receiver
@@ -17,6 +18,17 @@ type SignalPair struct {
 }
 
 func main() {
+	if os.Args[1] == "" {
+		fmt.Printf("Please specify the input pin for the signal of the ir sensor\n")
+		return
+	}
+
+	inputPin, err := strconv.Atoi(os.Args[1])
+	if err != nil {
+		fmt.Printf("Invalid input pin number\n")
+		return
+	}
+
 	rawSignal := decodeSignal(inputPin)
 	gapValues, pulseValues := parseSignal(rawSignal)
 	gapBinaryString := parseGapValues(gapValues, rawSignal)
