@@ -16,9 +16,9 @@ irDecoder is written entirely in go and uses the go-rpio package to access the r
         
         go build decode.go
 
-This command will make create an executable which you can run on the raspberry pi.
+Then execute the program as usual. Be sure to specify the signal pin from the ir sensor:
         
-        ./decode
+        ./decode 16
 
 Hardware Installation & Setup
 -----------------------------
