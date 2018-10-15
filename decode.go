@@ -18,7 +18,7 @@ type SignalPair struct {
 }
 
 func main() {
-	if os.Args[1] == "" {
+	if len(os.Args) < 2 {
 		fmt.Printf("Please specify the input pin for the signal of the ir sensor\n")
 		return
 	}
