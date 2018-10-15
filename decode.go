@@ -36,6 +36,7 @@ func decodeSignal(inPin int) []SignalPair {
 	var command []SignalPair
 
 	// Loop until we see a low state
+	fmt.Printf("Waiting for ir signal...\n")
 	for currentState == rpio.State(rpio.High) {
 		currentState = pin.Read()
 	}
