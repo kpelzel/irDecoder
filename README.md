@@ -22,4 +22,4 @@ Then execute the program as usual. Be sure to specify the signal pin from the ir
 
 Hardware Installation & Setup
 -----------------------------
-This package was designed to be used with a raspberry pi (any version should work) and an ir receiver (something similar to the TSOP38238). The input pin signal pin from the ir receiver is hard coded in as rpio pin 10. This can easily be changed by changing the value at the top of decode.go. 
+This package was designed to be used with a raspberry pi (any version should work) and an ir receiver (something similar to the TSOP38238). The input pin signal pin is specified by giving it as the first command line argument.
