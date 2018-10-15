@@ -26,10 +26,13 @@ func main() {
 }
 
 func decodeSignal(inPin int) []SignalPair {
+	err := rpio.Open()
+	if err != nil {
+		fmt.Printf("Error when opening rpio: %v", err)
+	}
 	pin := rpio.Pin(inPin)
 	pin.Input()
 	currentState := rpio.State(rpio.High)
-
 	var command []SignalPair
 
 	// Loop until we see a low state
