@@ -33,7 +33,7 @@ func main() {
 	gapValues, pulseValues := parseSignal(rawSignal)
 	gapBinaryString := parseGapValues(gapValues, rawSignal)
 	pulseBinaryString := parsePulseValues(pulseValues, rawSignal)
-	fmt.Printf("Binary from gaps = %v\n", gapBinaryString)
+	fmt.Printf("Binary from gaps =   %v\n", gapBinaryString)
 	fmt.Printf("Binary from pulses = %v\n", pulseBinaryString)
 }
 
