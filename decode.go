@@ -148,7 +148,11 @@ func parseGapValues(inputGapValues [][]int64, inputSignal []SignalPair) string {
 	}
 	fmt.Printf("Final gap values: \n")
 	for _, value := range finalGapValues {
-		fmt.Println(value)
+		if index == 0 {
+			fmt.Printf("Leading gap duration: %v", value)
+		} else {
+			fmt.Println(value)
+		}
 	}
 
 	fmt.Printf("Calculating binary string...\n")
@@ -181,8 +185,12 @@ func parsePulseValues(inputPulseValues [][]int64, inputSignal []SignalPair) stri
 		finalPulseValues = append(finalPulseValues, averageOfSlice(pulseSlice))
 	}
 	fmt.Printf("Final pulse values: \n")
-	for _, value := range finalPulseValues {
-		fmt.Println(value)
+	for index, value := range finalPulseValues {
+		if index == 0 {
+			fmt.Printf("Leading pulse duration: %v", value)
+		} else {
+			fmt.Println(value)
+		}
 	}
 
 	fmt.Printf("Calculating binary string...\n")
